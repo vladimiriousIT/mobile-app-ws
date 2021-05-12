@@ -11,7 +11,6 @@ import com.appsdeveloperblog.app.ws.ui.model.response.ErrorMessages;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,6 +54,8 @@ public class UserServiceImpl implements UserService {
     String publicUserId = utils.generateUserId(15);
     userEntity.setUserId(publicUserId);
     userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+    userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
+    userEntity.setEmailVerificationStatus(false);
 
     UserEntity storedUserDetails = userRepository.save(userEntity);
 
@@ -79,7 +80,14 @@ public class UserServiceImpl implements UserService {
     UserEntity userEntity = userRepository.findUserByEmail(email);
     if (userEntity == null) throw new UsernameNotFoundException(email);
 
-    return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
+    //return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
+    return new User(userEntity.getEmail(),
+            userEntity.getEncryptedPassword(),
+            userEntity.getEmailVerificationStatus(),
+            true,
+            true,
+            true,
+            new ArrayList<>());
   }
 
   @Override
@@ -127,6 +135,24 @@ public class UserServiceImpl implements UserService {
       UserDTO userDTO = new UserDTO();
       BeanUtils.copyProperties(userEntity, userDTO);
       returnValue.add(userDTO);
+    }
+    return returnValue;
+  }
+
+  @Override
+  public boolean verifyEmailToken(String token) {
+    boolean returnValue = false;
+
+    // Find user by token
+    UserEntity userEntity = userRepository.findUserByEmailVerificationToken(token);
+    if(userEntity != null){
+      boolean hasTokenExpired = Utils.hasTokenExpired(token);
+      if(!hasTokenExpired){
+        userEntity.setEmailVerificationToken(null);
+        userEntity.setEmailVerificationStatus(Boolean.TRUE);
+        userRepository.save(userEntity);
+        returnValue = true;
+      }
     }
     return returnValue;
   }
