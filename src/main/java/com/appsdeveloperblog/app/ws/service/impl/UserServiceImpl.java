@@ -41,11 +41,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     PasswordResetTokenRepository passwordResetTokenRepository;
 
+    @Autowired
+    AmazonSES amazonSES;
+
     @Override
     public UserDTO createUser(UserDTO userDTO) {
 
-        if (userRepository.findUserByEmail(userDTO.getEmail()) != null)
-            throw new RuntimeException("Record " + userDTO.getEmail() + " already exists");
+        if (userRepository.findByEmail(userDTO.getEmail()) != null)
+            throw new UserServiceException("Record " + userDTO.getEmail() + " already exists");
 
         for (int i = 0; i < userDTO.getAddresses().size(); i++) {
             AddressDTO address = userDTO.getAddresses().get(i);
@@ -69,12 +72,15 @@ public class UserServiceImpl implements UserService {
         //BeanUtils.copyProperties(storedUserDetails, returnValue);
         UserDTO returnValue = modelMapper.map(storedUserDetails, UserDTO.class);
 
+        // Send an email message to user to verify their email address
+        amazonSES.verifyEmail(returnValue);
+
         return returnValue;
     }
 
     @Override
     public UserDTO getUserByEmail(String email) {
-        UserEntity userEntity = userRepository.findUserByEmail(email);
+        UserEntity userEntity = userRepository.findByEmail(email);
         if (userEntity == null) throw new UsernameNotFoundException(email);
         UserDTO returnValue = new UserDTO();
         BeanUtils.copyProperties(userEntity, returnValue);
@@ -83,7 +89,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findUserByEmail(email);
+        UserEntity userEntity = userRepository.findByEmail(email);
         if (userEntity == null) throw new UsernameNotFoundException(email);
 
         //return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
@@ -167,7 +173,7 @@ public class UserServiceImpl implements UserService {
     public boolean requestPasswordReset(String email) {
         boolean returnValue = false;
 
-        UserEntity userEntity = userRepository.findUserByEmail(email);
+        UserEntity userEntity = userRepository.findByEmail(email);
         if (userEntity == null) {
             return returnValue;
         }
@@ -205,7 +211,7 @@ public class UserServiceImpl implements UserService {
         UserEntity savedUserEntity = userRepository.save(userEntity);
 
         // Verify if password was saved successfully
-        if(savedUserEntity != null && savedUserEntity.getEncryptedPassword().equalsIgnoreCase(encodedPassword)){
+        if (savedUserEntity != null && savedUserEntity.getEncryptedPassword().equalsIgnoreCase(encodedPassword)) {
             returnValue = true;
         }
         //Remove Password Reset token from database

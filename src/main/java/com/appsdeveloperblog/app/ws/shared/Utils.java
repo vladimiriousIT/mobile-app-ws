@@ -4,14 +4,13 @@ import com.appsdeveloperblog.app.ws.security.SecurityConsants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Random;
-import java.lang.*;
 
-@Component
+@Service
 public class Utils {
 
   private final Random RANDOM = new SecureRandom();

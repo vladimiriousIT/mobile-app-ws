@@ -5,7 +5,9 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDTO;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AmazonSES {
     final String FROM = "vladimir_stratiev@XXXX.com";
     final String SUBJECT = "One last step to complete your registration with PhotoApp";
@@ -17,27 +19,27 @@ public class AmazonSES {
 
     //HTML body for the email
     final String HTMLBODY = "<h1>Please verify your email address</h1>"
-            + "<p>Thank you for registering with our mobile app. To complete registration process and be able to use it"
+            + " <p>Thank you for registering with our mobile app. To complete registration process and be able to use it"
             + " click on the following link: "
-            + "<a href='ec2.url"
-            + "Final step to complete your registration " + "<a><br/><br/>"
-            + "Thank you! And we are waiting for you inside!";
+            + " <a href='ec2.url"
+            + " Final step to complete your registration " + "<a><br/><br/>"
+            + " Thank you! And we are waiting for you inside!";
 
     //EMAIL body for recipients with non-HTML email clients.
     final String TEXTBODY = "Please verify your email address. "
-            + "Thank you for registering with our mobile app. To complete registration process and be able to use it"
-            + " opne then the following URL in your browser window: "
-            + " ec2.uel"
+            + " Thank you for registering with our mobile app. To complete registration process and be able to use it"
+            + " open then the following URL in your browser window: "
+            + " ec2.url"
             + " Thank you! And we are waiting for you inside!";
 
     //HTML body for the email
     final String PASSWORD_RESET_HTMLBODY = "<h1>A request to reset your password</h1>"
-            + "<p>Hi, $firstName!</p> "
-            + "<p>Someone has reuested to reset your password with our project. If it were not you please contact us"
+            + " <p>Hi, $firstName!</p> "
+            + " <p>Someone has reuested to reset your password with our project. If it were not you please contact us"
             + " otherwise please click on the link below to set a new password: "
-            + "<a href='http://localhost:8080/verification-service/password-reset.html?token=$tokenValue'>"
+            + " <a href='http://localhost:8080/verification-service/password-reset.html?token=$tokenValue'>"
             + " Click this link to Reset Password "
-            + "<a><br/><br/>"
+            + " <a><br/><br/>"
             + "Thank you!";
 
     //HTML body for the email
@@ -50,7 +52,25 @@ public class AmazonSES {
             + " Thank you!";
 
     public void verifyEmail(UserDTO userDTO) {
+        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+        String htmlBodyWithToken = HTMLBODY.replace("$tokenValue", userDTO.getEmailVerificationToken());
+        String textBodyWithToken = TEXTBODY.replace("$tokenValue", userDTO.getEmailVerificationToken());
+        SendEmailRequest request = new SendEmailRequest()
+                .withDestination(new Destination().
+                        withToAddresses(userDTO.getEmail()))
+                .withMessage(new Message()
+                        .withBody(new Body()
+                                .withHtml(new Content()
+                                        .withCharset("UTF-8").withData(htmlBodyWithToken))
+                                .withText(new Content()
+                                        .withCharset("UTF-8").withData(textBodyWithToken)))
+                        .withSubject(new Content()
+                                .withCharset("UTF-8").withData(SUBJECT)))
+                .withSource(FROM);
 
+        client.sendEmail(request);
+
+        System.out.println("Email sent!");
     }
 
     public boolean sendPasswordResetReuqest(String firstName, String email, String token) {
@@ -80,7 +100,7 @@ public class AmazonSES {
                 .withSource(FROM);
 
         SendEmailResult result = client.sendEmail(request);
-        if(result != null && (result.getMessageId()!=null && !result.getMessageId().isEmpty())){
+        if (result != null && (result.getMessageId() != null && !result.getMessageId().isEmpty())) {
             returnValue = true;
         }
         return returnValue;

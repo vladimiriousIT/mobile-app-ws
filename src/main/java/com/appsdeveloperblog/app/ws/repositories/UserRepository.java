@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<UserEntity, String> {
-  UserEntity findUserByEmail(String email);
+  UserEntity findByEmail(String email);
   UserEntity findUserById(String userId);
   UserEntity findUserByEmailVerificationToken(String token);
 }
