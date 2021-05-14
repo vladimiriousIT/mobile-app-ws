@@ -9,22 +9,23 @@ import com.appsdeveloperblog.app.ws.shared.Utils;
 import com.appsdeveloperblog.app.ws.shared.dto.AddressDTO;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class UserServiceImplTest {
     @InjectMocks
@@ -52,10 +53,10 @@ public class UserServiceImplTest {
         MockitoAnnotations.openMocks(this);
 
         userEntity = new UserEntity();
-        userEntity.setId("1L");
+        userEntity.setId(1L);
         userEntity.setFirstName("Vladimir");
         userEntity.setLastName("Stratiev");
-        userEntity.setUserId(userId);
+        userEntity.setUser_Id(userId);
         userEntity.setEncryptedPassword(encryptedPassword);
         userEntity.setEmail("test@yahoo.com");
         userEntity.setEmailVerificationToken("fudshuf3903jfjds");
@@ -98,45 +99,46 @@ public class UserServiceImplTest {
                 () -> userService.createUser(userDTO));
     }
 
-    //    @Test
-//    final void testCreateUser() {
-//
-//        // userRepository.findByEmail(userDTO.getEmail()) != null
-//        when(userRepository.findByEmail(anyString())).thenReturn(null);
-//
-//        // utils.generateAddressId(30)
-//        when(utils.generateAddressId(anyInt())).thenReturn("hdsajdj459jnds");
-//
-//        // utils.generateUserId(15)
-//        when(utils.generateUserId(anyInt())).thenReturn(userId);
-//
-//        // bCryptPasswordEncoder.encode(userDTO.getPassword())
-//        when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encryptedPassword);
-//
-//        // userRepository.save(userEntity);
-//        when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
-//
-//        Mockito.doNothing().when(amazonSES).verifyEmail(any(UserDTO.class));
-//
-//        UserDTO userDTO = new UserDTO();
-//        userDTO.setAddresses(getAddressesDTO());
-//        userDTO.setFirstName("Vladimir");
-//        userDTO.setLastName("Stratiev");
-//        userDTO.setPassword("1234567");
-//        userDTO.setEmail("test@yahoo.com");
-//
-//        UserDTO storedUserDetails = userService.createUser(userDTO);
-//
-//        assertNotNull(storedUserDetails);
-//        assertEquals(userEntity.getFirstName(), storedUserDetails.getFirstName());
-//        assertEquals(userEntity.getLastName(), storedUserDetails.getLastName());
-//        assertNotNull(storedUserDetails.getUserId());
-//        assertEquals(storedUserDetails.getAddresses().size(), userEntity.getAddresses().size());
-//        verify(utils,times(2)).generateAddressId(30);
-//        verify(bCryptPasswordEncoder, times(1)).encode("1234567");
-//        verify(userRepository, times(1)).save(any(UserEntity.class));
-//    }
-//
+        @Test
+        @Disabled
+    final void testCreateUser() {
+
+        // userRepository.findByEmail(userDTO.getEmail()) != null
+        when(userRepository.findByEmail(anyString())).thenReturn(null);
+
+        // utils.generateAddressId(30)
+        when(utils.generateAddressId(anyInt())).thenReturn("hdsajdj459jnds");
+
+        // utils.generateUserId(15)
+        when(utils.generateUserId(anyInt())).thenReturn(userId);
+
+        // bCryptPasswordEncoder.encode(userDTO.getPassword())
+        when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encryptedPassword);
+
+        // userRepository.save(userEntity);
+        when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
+
+        Mockito.doNothing().when(amazonSES).verifyEmail(any(UserDTO.class));
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setAddresses(getAddressesDTO());
+        userDTO.setFirstName("Vladimir");
+        userDTO.setLastName("Stratiev");
+        userDTO.setPassword("1234567");
+        userDTO.setEmail("test@yahoo.com");
+
+        UserDTO storedUserDetails = userService.createUser(userDTO);
+
+        assertNotNull(storedUserDetails);
+        assertEquals(userEntity.getFirstName(), storedUserDetails.getFirstName());
+        assertEquals(userEntity.getLastName(), storedUserDetails.getLastName());
+        assertNotNull(storedUserDetails.getUser_Id());
+        assertEquals(storedUserDetails.getAddresses().size(), userEntity.getAddresses().size());
+        verify(utils,times(2)).generateAddressId(30);
+        verify(bCryptPasswordEncoder, times(1)).encode("1234567");
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+    }
+
     private List<AddressDTO> getAddressesDTO() {
         AddressDTO shippingAddressDTO = new AddressDTO();
         shippingAddressDTO.setType("shipping");
@@ -162,8 +164,7 @@ public class UserServiceImplTest {
     private List<AddressEntity> getAddressEntity() {
         List<AddressDTO> addresses = getAddressesDTO();
 
-        Type listType = new TypeToken<List<AddressEntity>>() {
-        }.getType();
-        return new ModelMapper().map(addresses, listType);
+        //Type listType = new TypeToken<List<AddressEntity>>() {}.getType();
+        return new ModelMapper().map(addresses, new TypeToken<List<AddressEntity>>() {}.getType());
     }
 }

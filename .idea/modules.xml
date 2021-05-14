@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/mobile-app-ws.iml" filepath="$PROJECT_DIR$/mobile-app-ws.iml" />
+      <module fileurl="file://$USER_HOME$/Downloads/mobile-app-ws-rest-assured/mobile-app-ws-rest-assured.iml" filepath="$USER_HOME$/Downloads/mobile-app-ws-rest-assured/mobile-app-ws-rest-assured.iml" />
     </modules>
   </component>
 </project>

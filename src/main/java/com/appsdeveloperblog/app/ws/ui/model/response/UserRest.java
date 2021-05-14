@@ -3,17 +3,17 @@ package com.appsdeveloperblog.app.ws.ui.model.response;
 import java.util.List;
 
 public class UserRest {
-  private String userId;
+  private Long userId;
   private String firstName;
   private String lastName;
   private String email;
   private List<AddressesRest> addresses;
 
-  public String getUserId() {
+  public Long getUserId() {
     return userId;
   }
 
-  public void setUserId(String userId) {
+  public void setUserId(Long userId) {
     this.userId = userId;
   }
 

@@ -6,7 +6,7 @@ import java.util.List;
 public class UserDTO implements Serializable {
   private static final long serialVersionUID = 4865903039190150223L;
   private String id;
-  private String userId;
+  private String user_Id;
   private String firstName;
   private String lastName;
   private String email;
@@ -16,7 +16,6 @@ public class UserDTO implements Serializable {
   private Boolean emailVerificationStatus = false;
   private List<AddressDTO> addresses;
 
-
   public String getId() {
     return id;
   }
@@ -25,12 +24,12 @@ public class UserDTO implements Serializable {
     this.id = id;
   }
 
-  public String getUserId() {
-    return userId;
+  public String getUser_Id() {
+    return user_Id;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setUser_Id(String user_Id) {
+    this.user_Id = user_Id;
   }
 
   public String getFirstName() {

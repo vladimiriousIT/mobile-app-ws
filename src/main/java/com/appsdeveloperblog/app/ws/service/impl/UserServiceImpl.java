@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
 
         String publicUserId = utils.generateUserId(15);
-        userEntity.setUserId(publicUserId);
+        userEntity.setUser_Id(publicUserId);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
         userEntity.setEmailVerificationStatus(false);
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
         UserDTO returnValue = modelMapper.map(storedUserDetails, UserDTO.class);
 
         // Send an email message to user to verify their email address
-        amazonSES.verifyEmail(returnValue);
+        // amazonSES.verifyEmail(returnValue);
 
         return returnValue;
     }
@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
             return returnValue;
         }
 
-        String token = new Utils().generatePasswordResetToken(userEntity.getUserId());
+        String token = new Utils().generatePasswordResetToken(userEntity.getUser_Id());
         PasswordResetTokenEntity passwordResetTokenEntity = new PasswordResetTokenEntity();
         passwordResetTokenEntity.setToken(token);
         passwordResetTokenEntity.setUserDetails(userEntity);

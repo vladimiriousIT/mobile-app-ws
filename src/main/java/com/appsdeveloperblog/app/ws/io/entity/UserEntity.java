@@ -10,10 +10,10 @@ public class UserEntity implements Serializable {
 
   @Id
   @GeneratedValue
-  private String id;
+  private Long id;
 
   @Column(nullable = false, unique = true)
-  private String userId;
+  private String user_Id;
 
   @Column(nullable = false, length = 50)
   private String firstName;
@@ -38,20 +38,20 @@ public class UserEntity implements Serializable {
   @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL)
   private List<AddressEntity> addresses;
 
-  public String getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
-  public String getUserId() {
-    return userId;
+  public String getUser_Id() {
+    return user_Id;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setUser_Id(String user_Id) {
+    this.user_Id = user_Id;
   }
 
   public String getFirstName() {

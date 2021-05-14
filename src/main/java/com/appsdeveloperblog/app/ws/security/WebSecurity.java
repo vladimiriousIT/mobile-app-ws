@@ -32,6 +32,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConsants.PASSWORD_RESET_URL)
                 .permitAll()
+                .antMatchers(SecurityConsants.H2_CONSOLE)
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -39,6 +41,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .addFilter(new AuthorizationFilter(authenticationManager()))
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.headers().frameOptions().disable();
     }
 
     @Override

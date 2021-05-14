@@ -36,13 +36,16 @@ public class UserController {
   @Autowired
   AddressService addressService;
   //http://localhost:8080/mobile-app-ws/users/
-  @GetMapping (path = (String)"/{userId}",
+  @GetMapping (path = "/{userId}",
                produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
   public UserRest getUser(@PathVariable ("userId") String userId) {
     UserRest returnValue = new UserRest();
 
-    UserDTO userDTO = userService.getUserByUserId(userId.toString());
-    BeanUtils.copyProperties(userDTO, returnValue);
+    UserDTO userDTO = userService.getUserByUserId(userId);
+    //BeanUtils.copyProperties(userDTO, returnValue);
+    ModelMapper modelMapper = new ModelMapper();
+    returnValue = modelMapper.map(userDTO, UserRest.class);
+
     return returnValue;
   }
 
@@ -52,18 +55,19 @@ public class UserController {
   public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception {
     UserRest returnValue = new UserRest();
     if(userDetails.getFirstName().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
-//    UserDTO userDTO = new UserDTO();
-//    BeanUtils.copyProperties(userDetails, userDTO);
+    //UserDTO userDTO = new UserDTO();
+    //BeanUtils.copyProperties(userDetails, userDTO);
 
     ModelMapper modelMapper = new ModelMapper();
     UserDTO userDTO = modelMapper.map(userDetails, UserDTO.class);
 
     UserDTO createdUser = userService.createUser(userDTO);
-//    BeanUtils.copyProperties(createUser, returnValue);
+    //BeanUtils.copyProperties(createdUser, returnValue);
     returnValue = modelMapper.map(createdUser, UserRest.class);
 
     return returnValue;
   }
+
 
   @PutMapping(path ="/{id}",
     consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE },
@@ -128,7 +132,7 @@ public class UserController {
     return new CollectionModel<>(addressesListRestModel);
   }
 
-  @GetMapping(path = "/{userId}/addresses/{addressId", produces = {
+  @GetMapping(path = "/{userId}/addresses/{addressId}", produces = {
     MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/hal+json"
   })
   public EntityModel<AddressesRest> getUserAddress(@PathVariable String userId,
